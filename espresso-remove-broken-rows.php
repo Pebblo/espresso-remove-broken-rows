@@ -15,8 +15,10 @@ function ee_remove_broken_rows() {
 	$deleted_rows['prices_rows'] = $wpdb->delete( EVENTS_PRICES_TABLE, array( 'event_id' => '0' ), array( '%d' ) );
 	//Remove start/end time rows where event_id == 0
 	$deleted_rows['times_rows'] = $wpdb->delete( EVENTS_START_END_TABLE, array( 'event_id' => '0' ), array( '%d' ) );
+	//Remove category rows where event_id == 0
+	$deleted_rows['category_rows'] = $wpdb->delete( EVENTS_CATEGORY_REL_TABLE, array( 'event_id' => '0' ), array( '%d' ) );
 	//Add a notice if rows were effected.
-	if( $deleted_rows['prices_rows'] || $deleted_rows['times_rows'] ) {
+	if( $deleted_rows['prices_rows'] || $deleted_rows['times_rows'] || $deleted_rows['category_rows'] ) {
 		set_transient( 'ee_remove_broken_rows_success', $deleted_rows, MINUTE_IN_SECONDS );
 	}
 }
@@ -27,19 +29,19 @@ function ee_remove_broken_rows_success_message() {
 
 	$deleted_rows = get_transient( 'ee_remove_broken_rows_success' );
 
-	if( $deleted_rows['prices_rows'] || $deleted_rows['times_rows'] ) {
+	if( $deleted_rows['prices_rows'] || $deleted_rows['times_rows'] || $deleted_rows['category_rows'] ) {
 	
-		if( $deleted_rows['prices_rows'] && $deleted_rows['times_rows'] ) {
-			$message = 'This plugin removed ' . $deleted_rows['prices_rows'] . ' rows from the ' . EVENTS_PRICES_TABLE . ' table and ' . $deleted_rows['times_rows'] . ' rows from the ' . EVENTS_START_END_TABLE . ' table';
-		} elseif ( $deleted_rows['prices_rows'] ) {
-			$message = 'This plugin removed ' . $deleted_rows['prices_rows'] . ' rows from the ' . EVENTS_PRICES_TABLE . ' table';
-		} elseif ($deleted_rows['times_rows'] ) {
-			$message = 'This plugin removed ' . $deleted_rows['times_rows'] . ' rows from the ' . EVENTS_START_END_TABLE . ' table';
-		} else {
-			$total_deleted = $deleted_rows['prices_rows'] + $deleted_rows['times_rows'];
-		
-			$message = 'This plugin removed a total of ' . $total_deleted . ' rows from the ' . EVENTS_PRICES_TABLE . ' and/or ' . EVENTS_START_END_TABLE . ' tables';
-		}
+		//if( $deleted_rows['prices_rows'] && $deleted_rows['times_rows'] ) {
+		$message = 'This plugin removed '; 
+		if ( $deleted_rows['prices_rows'] ) {
+			$message .= '<br>' . $deleted_rows['prices_rows'] . ' rows from the ' . EVENTS_PRICES_TABLE . ' table';
+		} 
+		if ($deleted_rows['times_rows'] ) {
+			$message .= '<br>' . $deleted_rows['times_rows'] . ' rows from the ' . EVENTS_START_END_TABLE . ' table';
+		} 
+		if ($deleted_rows['category_rows'] ) {
+			$message .= '<br>' . $deleted_rows['category_rows'] . ' rows from the ' . EVENTS_CATEGORY_REL_TABLE . ' table';
+		} 
 
 		?>
 			<div class="notice notice-success is-dismissible">
