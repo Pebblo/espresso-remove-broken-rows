@@ -32,7 +32,7 @@ function ee_remove_broken_rows_success_message() {
 	if( $deleted_rows['prices_rows'] || $deleted_rows['times_rows'] || $deleted_rows['category_rows'] ) {
 	
 		//if( $deleted_rows['prices_rows'] && $deleted_rows['times_rows'] ) {
-		$message = 'This plugin removed '; 
+		$message = 'The "EE3 remove broken rows" plugin removed:'; 
 		if ( $deleted_rows['prices_rows'] ) {
 			$message .= '<br>' . $deleted_rows['prices_rows'] . ' rows from the ' . EVENTS_PRICES_TABLE . ' table';
 		} 
@@ -50,5 +50,6 @@ function ee_remove_broken_rows_success_message() {
 		<?php
 	}
 	delete_transient( 'ee_remove_broken_rows_success' );
+	deactivate_plugins( plugin_basename( __FILE__ ) );
 }
 register_activation_hook( __FILE__, 'ee_remove_broken_rows' );
